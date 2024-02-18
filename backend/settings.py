@@ -17,9 +17,9 @@ ALLOWED_HOSTS = ['*']
 
 
 CORS_ALLOWED_ORIGINS = [
-    "cheradip.com",
-    "manage.cheradip.com",
-    "localhost:4200"
+    "https://cheradip.com",
+    "https://manage.cheradip.com",
+    "http://localhost:4200" 
 ]
 
 INSTALLED_APPS = [
@@ -29,7 +29,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'fish',
+    'kbm',
     'rest_framework.authtoken',
     'rest_framework',
     'corsheaders'
@@ -72,9 +72,9 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cheradip_fish',
-        'USER': 'cheradip_cheradip',
-        'PASSWORD': 'Sa@2271029867',
+        'NAME': 'collegeedu_kbm',
+        'USER': 'root',
+        'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '3306'
     }
@@ -136,7 +136,7 @@ LOGGING = {
 }
 
 AUTHENTICATION_BACKENDS = [
-    'fish.backends.CustomBackend',
+    'kbm.backends.CustomBackend',
     'django.contrib.auth.backends.ModelBackend'
 ]
 
