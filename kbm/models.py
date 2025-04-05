@@ -3,6 +3,7 @@ from django.utils.translation import gettext as _
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 class Item(models.Model):
     SIZE = [
@@ -219,3 +220,80 @@ class JsonData(models.Model):
 
     def __str__(self):
         return f"JSON Data #{self.id}"
+
+
+class Employee(models.Model):
+    GENDER_CHOICES = [
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+        ('Common', 'Common'),
+    ]
+    user = models.CharField(max_length=8, unique=True, blank=False, null=False)
+    name = models.CharField(max_length=63, blank=True, null=True)
+    gender = models.CharField(max_length=8, blank=True, null=True, choices=GENDER_CHOICES)
+    fathersName = models.CharField(max_length=63, blank=True, null=True)
+    mothersName = models.CharField(max_length=63, blank=True, null=True)
+    husband = models.CharField(max_length=63, blank=True, null=True)
+    designation = models.CharField(max_length=63, blank=True, null=True)
+    dob = models.DateTimeField(blank=True, null=True)
+    index = models.CharField(max_length=14, blank=True, null=True)
+    joiningDate = models.DateTimeField(blank=True, null=True)
+    bankAccount = models.DecimalField(max_digits=18, decimal_places=0, blank=True, null=True)
+    teacherOrStaff = models.BooleanField(default=False, blank=True, null=True)
+    mpoOrHonours = models.BooleanField(default=False, blank=True, null=True)
+    password = models.CharField(blank=True, null=True, max_length=14)
+    bloodGroup = models.CharField(max_length=14, blank=True, null=True)
+    mobile = models.CharField(max_length=11, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    image = models.ImageField(upload_to='images/', blank=True, null=True)
+    comments = models.TextField(max_length=2047, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.name} {self.user} {self.password}"
+    
+    
+class Institute(models.Model):  
+    user = models.ForeignKey(User, on_delete=models.CASCADE)   
+    pInstitute = models.CharField(max_length=127, blank=True, null=True)
+    pijd = models.DateTimeField(blank=True, null=True)
+    pird = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user}"
+    
+    
+class Address(models.Model):   
+    user = models.ForeignKey(User, on_delete=models.CASCADE) 
+    division = models.CharField(max_length=31, blank=True, null=True)
+    district = models.CharField(max_length=31, blank=True, null=True)
+    thana = models.CharField(max_length=31, blank=True, null=True)
+    union = models.CharField(max_length=31, blank=True, null=True)
+    postCode = models.DecimalField(max_digits=4, decimal_places=0, blank=True, null=True)
+    village = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user}"
+
+
+class Education(models.Model):   
+    user = models.ForeignKey(User, on_delete=models.CASCADE) 
+    exam = models.CharField(max_length=63, blank=True, null=True)
+    institute = models.CharField(max_length=255, blank=True, null=True)
+    passingYear = models.DecimalField(max_digits=4, decimal_places=0, blank=True, null=True)
+    grade = models.DecimalField(max_digits=4, decimal_places=0, blank=True, null=True)
+    maxGrade = models.DecimalField(max_digits=1, decimal_places=0, blank=True, null=True)
+    pClass = models.CharField(max_length=63, blank=True, null=True)
+    boardUniversity = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user}"
+
+
+class Profile(models.Model):   
+    user = models.CharField(max_length=8, unique=True, blank=False, null=False)
+    title = models.CharField(max_length=63, blank=True, null=True)
+    description = models.TextField(max_length=4095, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user} {self.title}"
+    
