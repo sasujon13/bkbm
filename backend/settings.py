@@ -36,6 +36,16 @@ INSTALLED_APPS = [
 ]
 ADMIN_SITE_HEADER = "Cheradip Administration"
 ADMIN_SITE_TITLE = "Cheradip Admin"
+X_FRAME_OPTIONS = 'ALLOWALL'
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = False
+
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = False
+# In Development for https
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
