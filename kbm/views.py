@@ -12,6 +12,8 @@ from django.contrib.auth import authenticate
 from django.views.decorators.csrf import csrf_exempt
 import logging, random, string, json  
 from django.conf import settings
+from .models import Teacher, ExTeacher, Staff, ExStaff, OtherPeople, TeacherHonours, NonMpoStaff
+from .serializers import TeacherSerializer, ExTeacherSerializer, StaffSerializer, ExStaffSerializer, OtherPeopleSerializer, TeacherHonoursSerializer, NonMpoStaffSerializer
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -463,3 +465,46 @@ def get_shipped_status(request, order_id):
         return JsonResponse({'shipped': shipped})
     except Order.DoesNotExist:
         return JsonResponse({'error': 'Order not found'}, status=404)
+    
+
+class TeacherListAPIView(APIView):
+    def get(self, request):
+        teachers = Teacher.objects.all()
+        serializer = TeacherSerializer(teachers, many=True, context={'request': request})
+        return Response(serializer.data)    
+
+class ExTeacherListAPIView(APIView):
+    def get(self, request):
+        exTeachers = ExTeacher.objects.all()
+        serializer = ExTeacherSerializer(exTeachers, many=True, context={'request': request})
+        return Response(serializer.data)    
+
+class StaffListAPIView(APIView):
+    def get(self, request):
+        staffs = Staff.objects.all()
+        serializer = StaffSerializer(staffs, many=True, context={'request': request})
+        return Response(serializer.data)    
+
+class ExStaffListAPIView(APIView):
+    def get(self, request):
+        exStaffs = ExStaff.objects.all()
+        serializer = ExStaffSerializer(exStaffs, many=True, context={'request': request})
+        return Response(serializer.data)    
+
+class OtherPeopleListAPIView(APIView):
+    def get(self, request):
+        otherPeoples = OtherPeople.objects.all()
+        serializer = OtherPeopleSerializer(otherPeoples, many=True, context={'request': request})
+        return Response(serializer.data)
+    
+class TeacherHonoursListAPIView(APIView):
+    def get(self, request):
+        teacherHonours = TeacherHonours.objects.all()
+        serializer = TeacherHonoursSerializer(teacherHonours, many=True, context={'request': request})
+        return Response(serializer.data)
+    
+class NonMpoStaffListAPIView(APIView):
+    def get(self, request):
+        nonMpoStaffs = NonMpoStaff.objects.all()
+        serializer = NonMpoStaffSerializer(nonMpoStaffs, many=True, context={'request': request})
+        return Response(serializer.data)

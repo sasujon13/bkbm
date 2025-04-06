@@ -16,6 +16,13 @@ from .views import (
     CustomerResetView,
     PasswordUpdateView,
     OrderRetrieveView,
+    TeacherListAPIView,
+    StaffListAPIView,
+    ExTeacherListAPIView,
+    ExStaffListAPIView,
+    OtherPeopleListAPIView,
+    TeacherHonoursListAPIView,
+    NonMpoStaffListAPIView
     
 )
 urlpatterns = [
@@ -32,6 +39,13 @@ urlpatterns = [
     path('password/', PasswordExistsView.as_view(), name='password'),
     path('myorder/<str:username>/', OrderRetrieveView.as_view(), name='myorder'),
     path('save_json_data/', views.save_json_data, name='save_json_data'),
+    path('teacher/', TeacherListAPIView.as_view(), name='teacher'),
+    path('teacherHonours/', TeacherHonoursListAPIView.as_view(), name='teacher'),
+    path('staff/', StaffListAPIView.as_view(), name='staff'),
+    path('nonMpoStaff/', NonMpoStaffListAPIView.as_view(), name='nonMpostaff'),
+    path('exTeacher/', ExTeacherListAPIView.as_view(), name='exTeacher'),
+    path('exStaff/', ExStaffListAPIView.as_view(), name='exStaff'),
+    path('otherPeople/', OtherPeopleListAPIView.as_view(), name='otherPeople'),
     re_path(r'^favicon\.ico$', serve, {'path': 'static/favicon.ico'}),
     # re_path(r'^manage/media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
 ]

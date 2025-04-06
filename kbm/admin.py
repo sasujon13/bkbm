@@ -1,18 +1,13 @@
 from django.contrib import admin
-from .models import Item, Customer, Order, Ordered, Canceled, OrderDetail, Transaction, Profile, Education, Address, Institute, Employee
+from .models import Teacher, Staff, ExTeacher, ExStaff, OtherPeople, TeacherHonours, NonMpoStaff
 
-admin.site.register(Customer)
-admin.site.register(Item)
-admin.site.register(Order)
-admin.site.register(Ordered)
-admin.site.register(Canceled)
-admin.site.register(OrderDetail)
-admin.site.register(Transaction)
-admin.site.register(Employee)
-admin.site.register(Institute)
-admin.site.register(Address)
-admin.site.register(Education)
-admin.site.register(Profile)
+admin.site.register(Teacher)
+admin.site.register(Staff)
+admin.site.register(ExTeacher)
+admin.site.register(ExStaff)
+admin.site.register(OtherPeople)
+admin.site.register(TeacherHonours)
+admin.site.register(NonMpoStaff)
 
 
 def completed_button(self, obj):

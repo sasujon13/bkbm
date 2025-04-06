@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Item, Customer, Order, Ordered, OrderDetail, Transaction
+from .models import Item, Customer, Order, Ordered, OrderDetail, Transaction, Teacher, Staff, ExTeacher, ExStaff, OtherPeople, TeacherHonours, NonMpoStaff
 
 class ItemSerializer(serializers.ModelSerializer):
     class Meta:
@@ -44,3 +44,96 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = '__all__'   
+
+class TeacherSerializer(serializers.ModelSerializer):
+    photo_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Teacher
+        fields = '__all__'
+
+    def get_photo_url(self, obj):
+        request = self.context.get('request')
+        if obj.Img and hasattr(obj.Img, 'url'):
+            return request.build_absolute_uri(obj.Img.url)
+        return '' 
+
+class StaffSerializer(serializers.ModelSerializer):
+    photo_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Staff
+        fields = '__all__'
+
+    def get_photo_url(self, obj):
+        request = self.context.get('request')
+        if obj.Img and hasattr(obj.Img, 'url'):
+            return request.build_absolute_uri(obj.Img.url)
+        return '' 
+
+class ExTeacherSerializer(serializers.ModelSerializer):
+    photo_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ExTeacher
+        fields = '__all__'
+
+    def get_photo_url(self, obj):
+        request = self.context.get('request')
+        if obj.Img and hasattr(obj.Img, 'url'):
+            return request.build_absolute_uri(obj.Img.url)
+        return '' 
+
+class ExStaffSerializer(serializers.ModelSerializer):
+    photo_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ExStaff
+        fields = '__all__'
+
+    def get_photo_url(self, obj):
+        request = self.context.get('request')
+        if obj.Img and hasattr(obj.Img, 'url'):
+            return request.build_absolute_uri(obj.Img.url)
+        return '' 
+
+class OtherPeopleSerializer(serializers.ModelSerializer):
+    photo_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = OtherPeople
+        fields = '__all__'
+
+    def get_photo_url(self, obj):
+        request = self.context.get('request')
+        if obj.Img and hasattr(obj.Img, 'url'):
+            return request.build_absolute_uri(obj.Img.url)
+        return ''
+    
+
+class TeacherHonoursSerializer(serializers.ModelSerializer):
+    photo_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TeacherHonours
+        fields = '__all__'
+
+    def get_photo_url(self, obj):
+        request = self.context.get('request')
+        if obj.Img and hasattr(obj.Img, 'url'):
+            return request.build_absolute_uri(obj.Img.url)
+        return ''
+    
+
+class NonMpoStaffSerializer(serializers.ModelSerializer):
+    photo_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = NonMpoStaff
+        fields = '__all__'
+
+    def get_photo_url(self, obj):
+        request = self.context.get('request')
+        if obj.Img and hasattr(obj.Img, 'url'):
+            return request.build_absolute_uri(obj.Img.url)
+        return ''
