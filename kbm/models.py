@@ -300,17 +300,17 @@ class Profile(models.Model):
 
 class Teacher(models.Model):
     ID = models.IntegerField(primary_key=True)
-    Img = models.ImageField(upload_to='images/personnel')
+    Img = models.ImageField(upload_to='images/personnel', blank=True, null=True)
     Name = models.CharField(max_length=100)
     Gender = models.CharField(max_length=100, blank=True, null=True)
     Designation = models.CharField(max_length=100)
     Dept = models.CharField(max_length=100)
-    FName = models.CharField(max_length=100)
-    MName = models.CharField(max_length=100)
+    FName = models.CharField(max_length=100, null=True, blank=True)
+    MName = models.CharField(max_length=100, null=True, blank=True)
     Joining = models.DateField(null=True, blank=True)
-    Index = models.CharField(max_length=50)
-    Mobile = models.CharField(max_length=15)
-    Email = models.EmailField(null=True, blank=True)
+    Index = models.CharField(max_length=50, null=True, blank=True)
+    Mobile = models.CharField(max_length=15, null=True, blank=True)
+    Email = models.EmailField(max_length=100, null=True, blank=True)
     PreAddress = models. TextField(null=True, blank=True)
     PerAddress = models. TextField(null=True, blank=True)
     SSC = models. TextField(null=True, blank=True)
@@ -346,17 +346,17 @@ class Teacher(models.Model):
     
 class TeacherHonours(models.Model):
     ID = models.IntegerField(primary_key=True)
-    Img = models.ImageField(upload_to='images/personnel')
+    Img = models.ImageField(upload_to='images/personnel', blank=True, null=True)
     Name = models.CharField(max_length=100)
     Gender = models.CharField(max_length=100, blank=True, null=True)
     Designation = models.CharField(max_length=100)
     Dept = models.CharField(max_length=100)
-    FName = models.CharField(max_length=100)
-    MName = models.CharField(max_length=100)
+    FName = models.CharField(max_length=100, null=True, blank=True)
+    MName = models.CharField(max_length=100, null=True, blank=True)
     Joining = models.DateField(null=True, blank=True)
-    Index = models.CharField(max_length=50)
-    Mobile = models.CharField(max_length=15)
-    Email = models.EmailField(null=True, blank=True)
+    Index = models.CharField(max_length=50, null=True, blank=True)
+    Mobile = models.CharField(max_length=15, null=True, blank=True)
+    Email = models.EmailField(max_length=100, null=True, blank=True)
     PreAddress = models. TextField(null=True, blank=True)
     PerAddress = models.TextField(null=True, blank=True)
     SSC = models.TextField(null=True, blank=True)
@@ -393,17 +393,17 @@ class TeacherHonours(models.Model):
 
 class Staff(models.Model):
     ID = models.IntegerField(primary_key=True)
-    Img = models.ImageField(upload_to='images/personnel')
+    Img = models.ImageField(upload_to='images/personnel', blank=True, null=True)
     Name = models.CharField(max_length=100)
     Gender = models.CharField(max_length=100, blank=True, null=True)
     Designation = models.CharField(max_length=100)
     Dept = models.CharField(max_length=100)
-    FName = models.CharField(max_length=100)
-    MName = models.CharField(max_length=100)
+    FName = models.CharField(max_length=100, null=True, blank=True)
+    MName = models.CharField(max_length=100, null=True, blank=True)
     Joining = models.DateField(null=True, blank=True)
-    Index = models.CharField(max_length=50)
-    Mobile = models.CharField(max_length=15)
-    Email = models.EmailField(null=True, blank=True)
+    Index = models.CharField(max_length=50, null=True, blank=True)
+    Mobile = models.CharField(max_length=15, null=True, blank=True)
+    Email = models.EmailField(max_length=100, null=True, blank=True)
     PreAddress = models.TextField(null=True, blank=True)
     PerAddress = models.TextField(null=True, blank=True)
     SSC = models.TextField(null=True, blank=True)
@@ -441,17 +441,17 @@ class Staff(models.Model):
 
 class NonMpoStaff(models.Model):
     ID = models.IntegerField(primary_key=True)
-    Img = models.ImageField(upload_to='images/personnel')
+    Img = models.ImageField(upload_to='images/personnel', blank=True, null=True)
     Name = models.CharField(max_length=100)
     Gender = models.CharField(max_length=100, blank=True, null=True)
     Designation = models.CharField(max_length=100)
     Dept = models.CharField(max_length=100)
-    FName = models.CharField(max_length=100)
-    MName = models.CharField(max_length=100)
+    FName = models.CharField(max_length=100, null=True, blank=True)
+    MName = models.CharField(max_length=100, null=True, blank=True)
     Joining = models.DateField(null=True, blank=True)
-    Index = models.CharField(max_length=50)
-    Mobile = models.CharField(max_length=15)
-    Email = models.EmailField(null=True, blank=True)
+    Index = models.CharField(max_length=50, null=True, blank=True)
+    Mobile = models.CharField(max_length=15, null=True, blank=True)
+    Email = models.EmailField(max_length=100, null=True, blank=True)
     PreAddress = models.TextField(null=True, blank=True)
     PerAddress = models.TextField(null=True, blank=True)
     SSC = models.TextField(null=True, blank=True)
@@ -488,17 +488,17 @@ class NonMpoStaff(models.Model):
     
 class ExTeacher(models.Model):
     ID = models.IntegerField(primary_key=True)
-    Img = models.ImageField(upload_to='images/personnel')
+    Img = models.ImageField(upload_to='images/personnel', blank=True, null=True)
     Name = models.CharField(max_length=100)
     Gender = models.CharField(max_length=100, blank=True, null=True)
     Designation = models.CharField(max_length=100)
     Dept = models.CharField(max_length=100)
-    FName = models.CharField(max_length=100)
-    MName = models.CharField(max_length=100)
+    FName = models.CharField(max_length=100, null=True, blank=True)
+    MName = models.CharField(max_length=100, null=True, blank=True)
     Joining = models.DateField(null=True, blank=True)
-    Index = models.CharField(max_length=50)
-    Mobile = models.CharField(max_length=15)
-    Email = models.EmailField(null=True, blank=True)
+    Index = models.CharField(max_length=50, null=True, blank=True)
+    Mobile = models.CharField(max_length=15, null=True, blank=True)
+    Email = models.EmailField(max_length=100, null=True, blank=True)
     PreAddress = models.TextField(null=True, blank=True)
     PerAddress = models.TextField(null=True, blank=True)
     SSC = models.TextField(null=True, blank=True)
@@ -535,17 +535,17 @@ class ExTeacher(models.Model):
     
 class ExStaff(models.Model):
     ID = models.IntegerField(primary_key=True)
-    Img = models.ImageField(upload_to='images/personnel')
+    Img = models.ImageField(upload_to='images/personnel', blank=True, null=True)
     Name = models.CharField(max_length=100)
     Gender = models.CharField(max_length=100, blank=True, null=True)
     Designation = models.CharField(max_length=100)
     Dept = models.CharField(max_length=100)
-    FName = models.CharField(max_length=100)
-    MName = models.CharField(max_length=100)
+    FName = models.CharField(max_length=100, null=True, blank=True)
+    MName = models.CharField(max_length=100, null=True, blank=True)
     Joining = models.DateField(null=True, blank=True)
-    Index = models.CharField(max_length=50)
-    Mobile = models.CharField(max_length=15)
-    Email = models.EmailField(null=True, blank=True)
+    Index = models.CharField(max_length=50, null=True, blank=True)
+    Mobile = models.CharField(max_length=15, null=True, blank=True)
+    Email = models.EmailField(max_length=100, null=True, blank=True)
     PreAddress = models.TextField(null=True, blank=True)
     PerAddress = models.TextField(null=True, blank=True)
     SSC = models.TextField(null=True, blank=True)
@@ -583,16 +583,16 @@ class ExStaff(models.Model):
         
 class OtherPeople(models.Model):
     ID = models.IntegerField(primary_key=True)
-    Img = models.ImageField(upload_to='images/personnel')
+    Img = models.ImageField(upload_to='images/personnel', blank=True, null=True)
     Name = models.CharField(max_length=100)
     Gender = models.CharField(max_length=100, blank=True, null=True)
     Designation = models.CharField(max_length=100)
     Dept = models.CharField(max_length=100)
-    FName = models.CharField(max_length=100)
-    MName = models.CharField(max_length=100)
+    FName = models.CharField(max_length=100, null=True, blank=True)
+    MName = models.CharField(max_length=100, null=True, blank=True)
     Joining = models.DateField(null=True, blank=True)
-    Mobile = models.CharField(max_length=15)
-    Email = models.EmailField(null=True, blank=True)
+    Mobile = models.CharField(max_length=15, null=True, blank=True)
+    Email = models.EmailField(max_length=100, null=True, blank=True)
     PreAddress = models.TextField(null=True, blank=True)
     PerAddress = models.TextField(null=True, blank=True)
     DOB = models.DateField(null=True, blank=True)
@@ -601,3 +601,23 @@ class OtherPeople(models.Model):
 
     def __str__(self):
         return f"{self.Name}   {self.Designation}   {self.Dept}"
+
+class Notification(models.Model):
+    CATEGORY = [
+        ('HSC', 'HSC'),
+        ('Degree', 'Degree'),
+        ('Honours', 'Honours'),
+        ('BBA', 'BBA'),
+        ('BM', 'BM'),
+        ('Open Uni.', 'Open Uni'),
+        ('Agriculture', 'Agriculture'),
+        ('All', 'All')
+    ]
+    category = models.CharField(max_length=28, choices=CATEGORY, blank=True, null=True)
+    text = models.TextField(max_length=255, null=True, blank=True)
+    link = models.URLField(max_length=512, null=True, blank=True)
+    img = models.ImageField(upload_to='images/notification')
+    date = models.DateField(auto_now_add=True, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.text} {self.link}"

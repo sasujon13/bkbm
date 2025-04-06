@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Item, Customer, Order, Ordered, OrderDetail, Transaction, Teacher, Staff, ExTeacher, ExStaff, OtherPeople, TeacherHonours, NonMpoStaff
+from .models import Item, Customer, Order, Ordered, OrderDetail, Transaction, Teacher, Staff, ExTeacher, ExStaff, OtherPeople, TeacherHonours, NonMpoStaff, Notification
 
 class ItemSerializer(serializers.ModelSerializer):
     class Meta:
@@ -137,3 +137,9 @@ class NonMpoStaffSerializer(serializers.ModelSerializer):
         if obj.Img and hasattr(obj.Img, 'url'):
             return request.build_absolute_uri(obj.Img.url)
         return ''
+    
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = '__all__'

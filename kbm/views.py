@@ -12,8 +12,8 @@ from django.contrib.auth import authenticate
 from django.views.decorators.csrf import csrf_exempt
 import logging, random, string, json  
 from django.conf import settings
-from .models import Teacher, ExTeacher, Staff, ExStaff, OtherPeople, TeacherHonours, NonMpoStaff
-from .serializers import TeacherSerializer, ExTeacherSerializer, StaffSerializer, ExStaffSerializer, OtherPeopleSerializer, TeacherHonoursSerializer, NonMpoStaffSerializer
+from .models import Teacher, ExTeacher, Staff, ExStaff, OtherPeople, TeacherHonours, NonMpoStaff, Notification
+from .serializers import TeacherSerializer, ExTeacherSerializer, StaffSerializer, ExStaffSerializer, OtherPeopleSerializer, TeacherHonoursSerializer, NonMpoStaffSerializer, NotificationSerializer
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -508,3 +508,10 @@ class NonMpoStaffListAPIView(APIView):
         nonMpoStaffs = NonMpoStaff.objects.all()
         serializer = NonMpoStaffSerializer(nonMpoStaffs, many=True, context={'request': request})
         return Response(serializer.data)
+    
+class NotificationExistsAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        notification = Notification.objects.all()
+        serializer = NotificationSerializer(notification, many=True)
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)

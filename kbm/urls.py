@@ -22,7 +22,8 @@ from .views import (
     ExStaffListAPIView,
     OtherPeopleListAPIView,
     TeacherHonoursListAPIView,
-    NonMpoStaffListAPIView
+    NonMpoStaffListAPIView,
+    NotificationExistsAPIView
     
 )
 urlpatterns = [
@@ -46,6 +47,7 @@ urlpatterns = [
     path('exTeacher/', ExTeacherListAPIView.as_view(), name='exTeacher'),
     path('exStaff/', ExStaffListAPIView.as_view(), name='exStaff'),
     path('otherPeople/', OtherPeopleListAPIView.as_view(), name='otherPeople'),
+    path('notification/', NotificationExistsAPIView.as_view(), name='notification'),
     re_path(r'^favicon\.ico$', serve, {'path': 'static/favicon.ico'}),
     # re_path(r'^manage/media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
 ]
