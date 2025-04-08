@@ -1,14 +1,30 @@
 from django.contrib import admin
-from .models import Teacher, Staff, ExTeacher, ExStaff, OtherPeople, TeacherHonours, NonMpoStaff, Notification
+from django import forms
+from .models import Teacher, Staff, ExTeacher, ExStaff, OtherPeople, TeacherHonours, NonMpoStaff, Notification, Education, Experience
+# Inline for Education model
 
-# admin.site.register(Teacher)
-# admin.site.register(Staff)
-# admin.site.register(ExTeacher)
-# admin.site.register(ExStaff)
-# admin.site.register(OtherPeople)
-# admin.site.register(TeacherHonours)
-# admin.site.register(NonMpoStaff)
-# admin.site.register(Notification)
+
+class EducationForm(forms.ModelForm):
+    class Meta:
+        model = Education
+        fields = ['Exam', 'Year', 'Result', 'Board_Uni']
+
+class ExperienceForm(forms.ModelForm):
+    class Meta:
+        model = Experience
+        fields = ['Title', 'Year', 'Description', 'Comment']
+
+class EducationInline(admin.TabularInline):  # or admin.StackedInline if you prefer
+    model = Education
+    extra = 1
+    can_delete = True
+    form = EducationForm
+
+class ExperienceInline(admin.TabularInline):  # or admin.StackedInline if you prefer
+    model = Experience
+    extra = 1
+    can_delete = True
+    form = ExperienceForm
 
 
 def completed_button(self, obj):
@@ -31,6 +47,7 @@ class NotificationAdmin(admin.ModelAdmin):
 
 @admin.register(Teacher)
 class TeacherAdmin(admin.ModelAdmin):
+    inlines = [EducationInline, ExperienceInline]
     list_display = ('Name', 'Designation', 'Dept',)
     search_fields = ('Name', 'Designation', 'Dept',)
     list_filter = ('Designation', 'Dept',)
@@ -38,6 +55,7 @@ class TeacherAdmin(admin.ModelAdmin):
 
 @admin.register(Staff)
 class StaffAdmin(admin.ModelAdmin):
+    inlines = [EducationInline, ExperienceInline]
     list_display = ('Name', 'Designation', 'Dept',)
     search_fields = ('Name', 'Designation', 'Dept',)
     list_filter = ('Designation', 'Dept',)
@@ -45,6 +63,7 @@ class StaffAdmin(admin.ModelAdmin):
 
 @admin.register(ExTeacher)
 class ExTeacherAdmin(admin.ModelAdmin):
+    inlines = [EducationInline, ExperienceInline]
     list_display = ('Name', 'Designation', 'Dept',)
     search_fields = ('Name', 'Designation', 'Dept',)
     list_filter = ('Designation', 'Dept',)
@@ -52,6 +71,7 @@ class ExTeacherAdmin(admin.ModelAdmin):
 
 @admin.register(ExStaff)
 class ExStaffAdmin(admin.ModelAdmin):
+    inlines = [EducationInline, ExperienceInline]
     list_display = ('Name', 'Designation', 'Dept',)
     search_fields = ('Name', 'Designation', 'Dept',)
     list_filter = ('Designation', 'Dept',)
@@ -59,6 +79,7 @@ class ExStaffAdmin(admin.ModelAdmin):
 
 @admin.register(OtherPeople)
 class OtherPeopleAdmin(admin.ModelAdmin):
+    inlines = [EducationInline, ExperienceInline]
     list_display = ('Name', 'Designation', 'Dept',)
     search_fields = ('Name', 'Designation', 'Dept',)
     list_filter = ('Designation', 'Dept',)
@@ -66,6 +87,7 @@ class OtherPeopleAdmin(admin.ModelAdmin):
 
 @admin.register(TeacherHonours)
 class TeacherHonoursAdmin(admin.ModelAdmin):
+    inlines = [EducationInline, ExperienceInline]
     list_display = ('Name', 'Designation', 'Dept',)
     search_fields = ('Name', 'Designation', 'Dept',)
     list_filter = ('Designation', 'Dept',)
@@ -73,6 +95,7 @@ class TeacherHonoursAdmin(admin.ModelAdmin):
 
 @admin.register(NonMpoStaff)
 class NonMpoStaffAdmin(admin.ModelAdmin):
+    inlines = [EducationInline, ExperienceInline]
     list_display = ('Name', 'Designation', 'Dept',)
     search_fields = ('Name', 'Designation', 'Dept',)
     list_filter = ('Designation', 'Dept',)
