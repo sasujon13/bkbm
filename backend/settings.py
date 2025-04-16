@@ -13,13 +13,19 @@ SECRET_KEY = 'django-insecure-d37cp#^cs90*bzhh+pvvv$6+h$tm@crx6$=_*^=d&g)k@+c%rj
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
-
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost"]
 
 CORS_ALLOWED_ORIGINS = [
     "https://cheradip.com",
-    "https://manage.cheradip.com",
-    "http://localhost:4200" 
+    "http://127.0.0.1:4200" 
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://cheradip.com",
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
 ]
 
 INSTALLED_APPS = [
@@ -37,10 +43,7 @@ INSTALLED_APPS = [
 ADMIN_SITE_HEADER = "Cheradip Administration"
 ADMIN_SITE_TITLE = "Cheradip Admin"
 X_FRAME_OPTIONS = 'ALLOWALL'
-CSRF_COOKIE_SAMESITE = 'None'
 CSRF_COOKIE_SECURE = False
-
-SESSION_COOKIE_SAMESITE = 'None'
 SESSION_COOKIE_SECURE = False
 # In Development for https
 # CSRF_COOKIE_SECURE = True
@@ -146,7 +149,6 @@ LOGGING = {
 }
 
 AUTHENTICATION_BACKENDS = [
-    'kbm.backends.CustomBackend',
     'django.contrib.auth.backends.ModelBackend'
 ]
 

@@ -1,8 +1,19 @@
 from django.contrib import admin
 from django import forms
-from .models import Teacher, Staff, ExTeacher, ExStaff, OtherPeople, TeacherHonours, NonMpoStaff, Notification, Education, Experience
+from django.db import models
+from django.contrib.contenttypes.admin import GenericTabularInline
+from .models import Teacher, Staff, ExTeacher, ExStaff, OtherPeople, TeacherHonours, NonMpoStaff, Notification, Education, Experience, Dept, Departments, RelatedImage, TeacherPart
 # Inline for Education model
 
+
+class RelatedImageInline(GenericTabularInline):
+    model = RelatedImage
+    extra = 1
+
+class DepartmentForm(forms.ModelForm):
+    class Meta:
+        model = Departments
+        fields = ['Name', 'Title', 'Description']
 
 class EducationForm(forms.ModelForm):
     class Meta:
@@ -39,6 +50,17 @@ def completed_button(self, obj):
 
     # completed_button.short_description = "Actions" def move_completed_orders(request, pk):
 
+@admin.register(Departments)
+class DepartmentsAdmin(admin.ModelAdmin):
+    inlines = [RelatedImageInline]
+    list_display = ('Name', 'Title',)
+    search_fields = ('Name', 'Title',)
+
+@admin.register(Dept)
+class DeptAdmin(admin.ModelAdmin):
+    list_display = ('Name',)
+    search_fields = ('Name',)
+
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
     list_display = ('date', 'category', 'text',)
@@ -47,6 +69,20 @@ class NotificationAdmin(admin.ModelAdmin):
 
 @admin.register(Teacher)
 class TeacherAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': admin.widgets.AdminTextareaWidget(attrs={'rows': 3})},
+    }
+    inlines = [EducationInline, ExperienceInline]
+    list_display = ('Name', 'Designation', 'Dept',)
+    search_fields = ('Name', 'Designation', 'Dept',)
+    list_filter = ('Designation', 'Dept',)
+    ordering = ('Order',)
+
+@admin.register(TeacherPart)
+class TeacherPartAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': admin.widgets.AdminTextareaWidget(attrs={'rows': 3})},
+    }
     inlines = [EducationInline, ExperienceInline]
     list_display = ('Name', 'Designation', 'Dept',)
     search_fields = ('Name', 'Designation', 'Dept',)
@@ -55,6 +91,9 @@ class TeacherAdmin(admin.ModelAdmin):
 
 @admin.register(Staff)
 class StaffAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': admin.widgets.AdminTextareaWidget(attrs={'rows': 3})},
+    }
     inlines = [EducationInline, ExperienceInline]
     list_display = ('Name', 'Designation', 'Dept',)
     search_fields = ('Name', 'Designation', 'Dept',)
@@ -63,6 +102,9 @@ class StaffAdmin(admin.ModelAdmin):
 
 @admin.register(ExTeacher)
 class ExTeacherAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': admin.widgets.AdminTextareaWidget(attrs={'rows': 3})},
+    }
     inlines = [EducationInline, ExperienceInline]
     list_display = ('Name', 'Designation', 'Dept',)
     search_fields = ('Name', 'Designation', 'Dept',)
@@ -71,6 +113,9 @@ class ExTeacherAdmin(admin.ModelAdmin):
 
 @admin.register(ExStaff)
 class ExStaffAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': admin.widgets.AdminTextareaWidget(attrs={'rows': 3})},
+    }
     inlines = [EducationInline, ExperienceInline]
     list_display = ('Name', 'Designation', 'Dept',)
     search_fields = ('Name', 'Designation', 'Dept',)
@@ -79,6 +124,9 @@ class ExStaffAdmin(admin.ModelAdmin):
 
 @admin.register(OtherPeople)
 class OtherPeopleAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': admin.widgets.AdminTextareaWidget(attrs={'rows': 3})},
+    }
     inlines = [EducationInline, ExperienceInline]
     list_display = ('Name', 'Designation', 'Dept',)
     search_fields = ('Name', 'Designation', 'Dept',)
@@ -87,6 +135,9 @@ class OtherPeopleAdmin(admin.ModelAdmin):
 
 @admin.register(TeacherHonours)
 class TeacherHonoursAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': admin.widgets.AdminTextareaWidget(attrs={'rows': 3})},
+    }
     inlines = [EducationInline, ExperienceInline]
     list_display = ('Name', 'Designation', 'Dept',)
     search_fields = ('Name', 'Designation', 'Dept',)
@@ -95,6 +146,9 @@ class TeacherHonoursAdmin(admin.ModelAdmin):
 
 @admin.register(NonMpoStaff)
 class NonMpoStaffAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': admin.widgets.AdminTextareaWidget(attrs={'rows': 3})},
+    }
     inlines = [EducationInline, ExperienceInline]
     list_display = ('Name', 'Designation', 'Dept',)
     search_fields = ('Name', 'Designation', 'Dept',)

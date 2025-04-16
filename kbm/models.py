@@ -1,295 +1,25 @@
-from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.utils.translation import gettext as _
+from datetime import timedelta
+from dateutil.relativedelta import relativedelta
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from django.utils import timezone
-from django.contrib.auth.models import User
-
-class Item(models.Model):
-    SIZE = [
-        ('XS', 'Extra_small'),
-        ('S', 'Small'),
-        ('M', 'Medium'),
-        ('L', 'Large'),
-        ('XL', 'Extra_large'),
-        ('XXL', 'Ultra_large'),
-    ]
-    code = models.CharField(max_length=4, unique=True, blank=False, null=True)
-    name = models.CharField(max_length=63, blank=False, null=True)
-    bangla_name = models.CharField(max_length=63, blank=False, null=True)
-    size = models.CharField(max_length=14, choices=SIZE, blank=False, null=True)
-    weight = models.DecimalField(max_digits=6, decimal_places=2, blank=False, null=True)
-    love = models.BooleanField(default=False, blank=False, null=True)
-    add_to_cart = models.BooleanField(default=False, blank=False, null=True)
-    discount = models.DecimalField(max_digits=2, decimal_places=0, default=0, blank=False, null=True)
-    price = models.DecimalField(max_digits=10, decimal_places=0, blank=False, null=True)
-    probable_weight = models.DecimalField(max_digits=5, decimal_places=2, blank=False, null=True)
-    quantity = models.IntegerField()
-    image = models.ImageField(upload_to='images/', blank=False, null=True)
-    PAYMENT_CHOICES = [
-        ('Cash on Deilivery', 'cod'),
-        ('bKash', 'bkash'),
-        ('Nagad', 'nagad'),
-        ('DBBL', 'dbbl'),
-        ('Other', 'other'),
-    ]
-    CATEGORY = [
-        ('Sea kbm', 'Sea kbm'),
-        ('River kbm', 'River kbm'),
-        ('Pond kbm', 'Pond kbm'),
-        ('Bill kbm', 'Bill kbm'),
-        ('other', 'Other'),
-    ]
-    TYPES = [
-        ('Dry', 'Dry'),
-        ('Soft', 'Soft'),
-    ]
-    VARIENTS = [
-        ('Whole kbm', 'Whole kbm'),
-        ('Half', 'Half'),
-        ('One Third', 'One Third'),
-        ('Quarter', 'Quarter'),
-        ('NA', 'NA'),
-    ]
-    category = models.CharField(max_length=28, choices=CATEGORY, blank=False, null=True)
-    supplier = models.CharField(max_length=54, blank=False, null=True)
-    variants = models.CharField(max_length=15, choices=VARIENTS, blank=False, null=True, default="NA")
-    types = models.CharField(max_length=15, choices=TYPES, blank=False, null=True, default="Soft")
-    reviews = models.TextField(blank=False, null=True, default="Rated By @Author")
-    ratings = models.DecimalField(max_digits=3, decimal_places=2, default="5", blank=False, null=True)
-    shipping = models.TextField(max_length=14, blank=False, null=True, default="NA")
-    in_stock = models.IntegerField(blank=False, null=True)
-    payment_method = models.CharField(max_length=28, choices=PAYMENT_CHOICES, default="bKash", blank=False, null=True)
-    details = models.TextField(max_length=512, blank=False, null=True, default="NA")
-    videos = models.URLField(blank=True, null=True)
-
-    def __str__(self):
-        return self.name
-
-
-class Transaction(models.Model):
-    username = models.CharField(max_length=11, null=True, blank=True, default='')
-    trxid = models.CharField(max_length=31, unique=True, default='')
-    paidFrom = models.CharField(max_length=31, default='')
-    Paid = models.DecimalField(max_digits=10, decimal_places=0, blank=False, null=True)
-
-    def __str__(self):
-        return self.trxid
+from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
+ 
     
-
-class OrderDetail(models.Model):
-    item = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True)
-    SN = models.IntegerField()
-    Name = models.CharField(max_length=127)
-    Image = models.URLField()
-    Weight = models.DecimalField(max_digits=6, decimal_places=2, blank=False, null=True)
-    Price = models.DecimalField(max_digits=10, decimal_places=0, blank=False, null=True)
-    Quantity = models.IntegerField(blank=False, null=True)
-    Discount = models.DecimalField(max_digits=9, decimal_places=0, blank=False, null=True)
-    Total = models.DecimalField(max_digits=10, decimal_places=0, blank=False, null=True)
-    GrandTotal = models.DecimalField(max_digits=10, decimal_places=0, blank=False, null=True)
-    Paid = models.DecimalField(max_digits=10, decimal_places=0, blank=False, null=True)
-    Due = models.DecimalField(max_digits=10, decimal_places=0, blank=False, null=True)
-    ShipingCost = models.DecimalField(max_digits=8, decimal_places=0, blank=False, null=True)
+class Dept(models.Model):
+    Name = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.Name
-
-class Order(models.Model):
-    division = models.CharField(max_length=31, null=True, blank=True)
-    district = models.CharField(max_length=31, null=True, blank=True)
-    thana = models.CharField(max_length=31, null=True, blank=True)
-    paymentMethod = models.CharField(max_length=31, null=True, blank=True)
-    username = models.CharField(max_length=11)
-    fullName = models.CharField(max_length=31, null=True, blank=True)
-    gender = models.CharField(max_length=10, null=True, blank=True)
-    union = models.CharField(max_length=31, null=True, blank=True)
-    village = models.TextField(max_length=255, null=True, blank=True)
-    altMobileNo = models.CharField(max_length=11, null=True, blank=True)
-    orderDetails = models.ManyToManyField(OrderDetail, blank=True)
-    transaction = models.ManyToManyField(Transaction, blank=True)
-    shipped = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.username
-
-
-class Ordered(models.Model):
-    division = models.CharField(max_length=31, null=True, blank=True)
-    district = models.CharField(max_length=31, null=True, blank=True)
-    thana = models.CharField(max_length=31, null=True, blank=True)
-    paymentMethod = models.CharField(max_length=31, null=True, blank=True)
-    username = models.CharField(max_length=11)
-    fullName = models.CharField(max_length=31, null=True, blank=True)
-    gender = models.CharField(max_length=10, null=True, blank=True)
-    union = models.CharField(max_length=31, null=True, blank=True)
-    village = models.TextField(max_length=255, null=True, blank=True)
-    altMobileNo = models.CharField(max_length=11, null=True, blank=True)
-    orderDetails = models.ManyToManyField(OrderDetail, blank=True)
-    transaction = models.ManyToManyField(Transaction, blank=True)
-    shipped = models.BooleanField(default=False)
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.username
     
-
-class Canceled(models.Model):
-    division = models.CharField(max_length=31, null=True, blank=True)
-    district = models.CharField(max_length=31, null=True, blank=True)
-    thana = models.CharField(max_length=31, null=True, blank=True)
-    paymentMethod = models.CharField(max_length=31, null=True, blank=True)
-    username = models.CharField(max_length=11)
-    fullName = models.CharField(max_length=31, null=True, blank=True)
-    gender = models.CharField(max_length=10, null=True, blank=True)
-    union = models.CharField(max_length=31, null=True, blank=True)
-    village = models.TextField(max_length=255, null=True, blank=True)
-    altMobileNo = models.CharField(max_length=11, null=True, blank=True)
-    orderDetails = models.ManyToManyField(OrderDetail, blank=True)
-    transaction = models.ManyToManyField(Transaction, blank=True)
-    shipped = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.username
-
-
-class CustomerManager(BaseUserManager):
-    def create_user(self, username, password=None, **extra_fields):
-        if not username:
-            raise ValueError("The Mobile Number must be set")
-        user = self.model(username=username, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, username, password=None, **extra_fields):
-        extra_fields.setdefault("is_staff", True)
-        extra_fields.setdefault("is_superuser", True)
-        return self.create_user(username, password, **extra_fields)
-
-class Customer(AbstractBaseUser, PermissionsMixin):
-    GENDER_CHOICES = [
-        ('Male', 'Male'),
-        ('Female', 'Female'),
-        ('Common', 'Common'),
-    ]
-    username = models.CharField(max_length=11, unique=True)
-    password = models.CharField(max_length=128) 
-    fullName = models.CharField(max_length=31)
-    gender = models.CharField(max_length=6, choices=GENDER_CHOICES)
-    division = models.CharField(max_length=31)
-    district = models.CharField(max_length=31)
-    thana = models.CharField(max_length=31)
-    union = models.CharField(max_length=31, blank=True)
-    village = models.CharField(max_length=255)
-
-    objects = CustomerManager()
-
-    USERNAME_FIELD = "username"
-
-    groups = models.ManyToManyField(Group, related_name="customer_set", blank=True)
-    
-    user_permissions = models.ManyToManyField(
-        Permission, related_name="customer_set", blank=True
-    )
-
-    def __str__(self):
-        return self.fullName
-
-    def get_full_name(self):
-        return self.fullName
-
-    def get_short_name(self):
-        return self.fullName
-
-    
-
-class CustomerToken(models.Model):
-    customer = models.OneToOneField(Customer, on_delete=models.CASCADE)
-    key = models.CharField("Key", max_length=40, primary_key=True)
-    created = models.DateTimeField("Created", default=timezone.now)
-
-    def __str__(self):
-        return f"Token for {self.customer.username}"
-    
-
-class JsonData(models.Model):
-    data = models.JSONField()
-
-    def __str__(self):
-        return f"JSON Data #{self.id}"
-
-
-class Employee(models.Model):
-    GENDER_CHOICES = [
-        ('Male', 'Male'),
-        ('Female', 'Female'),
-        ('Common', 'Common'),
-    ]
-    user = models.CharField(max_length=8, unique=True, blank=False, null=False)
-    name = models.CharField(max_length=63, blank=True, null=True)
-    gender = models.CharField(max_length=8, blank=True, null=True, choices=GENDER_CHOICES)
-    fathersName = models.CharField(max_length=63, blank=True, null=True)
-    mothersName = models.CharField(max_length=63, blank=True, null=True)
-    husband = models.CharField(max_length=63, blank=True, null=True)
-    designation = models.CharField(max_length=63, blank=True, null=True)
-    dob = models.DateTimeField(blank=True, null=True)
-    index = models.CharField(max_length=14, blank=True, null=True)
-    joiningDate = models.DateTimeField(blank=True, null=True)
-    bankAccount = models.DecimalField(max_digits=18, decimal_places=0, blank=True, null=True)
-    teacherOrStaff = models.BooleanField(default=False, blank=True, null=True)
-    mpoOrHonours = models.BooleanField(default=False, blank=True, null=True)
-    password = models.CharField(blank=True, null=True, max_length=14)
-    bloodGroup = models.CharField(max_length=14, blank=True, null=True)
-    mobile = models.CharField(max_length=11, blank=True, null=True)
-    email = models.EmailField(blank=True, null=True)
-    image = models.ImageField(upload_to='images/', blank=True, null=True)
-    comments = models.TextField(max_length=2047, blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.name} {self.user} {self.password}"
-    
-    
-class Institute(models.Model):  
-    user = models.ForeignKey(User, on_delete=models.CASCADE)   
-    pInstitute = models.CharField(max_length=127, blank=True, null=True)
-    pijd = models.DateTimeField(blank=True, null=True)
-    pird = models.DateTimeField(blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.user}"
-    
-    
-class Address(models.Model):   
-    user = models.ForeignKey(User, on_delete=models.CASCADE) 
-    division = models.CharField(max_length=31, blank=True, null=True)
-    district = models.CharField(max_length=31, blank=True, null=True)
-    thana = models.CharField(max_length=31, blank=True, null=True)
-    union = models.CharField(max_length=31, blank=True, null=True)
-    postCode = models.DecimalField(max_digits=4, decimal_places=0, blank=True, null=True)
-    village = models.CharField(max_length=255, blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.user}"
-
-
-class Profile(models.Model):   
-    user = models.CharField(max_length=8, unique=True, blank=False, null=False)
-    title = models.CharField(max_length=63, blank=True, null=True)
-    description = models.TextField(max_length=4095, blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.user} {self.title}"
     
 class Teacher(models.Model):
-    ID = models.IntegerField(primary_key=True)
     Img = models.ImageField(upload_to='images/personnel', blank=True, null=True)
     Name = models.CharField(max_length=100)
     Gender = models.CharField(max_length=100, blank=True, null=True)
     Designation = models.CharField(max_length=100)
-    Dept = models.CharField(max_length=100)
+    Dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
     FName = models.CharField(max_length=100, null=True, blank=True)
     MName = models.CharField(max_length=100, null=True, blank=True)
     Joining = models.DateField(null=True, blank=True)
@@ -301,18 +31,22 @@ class Teacher(models.Model):
     PerAddress = models.TextField(null=True, blank=True)
     DOB = models.DateField(null=True, blank=True)
     Order = models.IntegerField(null=True, blank=True)
-    Retirement = models.DateField(null=True, blank=True)  # Stored in MEDIA folder
+    Retirement = models.DateField(null=True, blank=True, editable=False)  
+
+    def save(self, *args, **kwargs):
+        if self.DOB and not self.Retirement:
+            self.Retirement = self.DOB + relativedelta(years=60)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.Name}   {self.Designation}   {self.Dept}"
     
-class TeacherHonours(models.Model):
-    ID = models.IntegerField(primary_key=True)
+class TeacherPart(models.Model):
     Img = models.ImageField(upload_to='images/personnel', blank=True, null=True)
     Name = models.CharField(max_length=100)
     Gender = models.CharField(max_length=100, blank=True, null=True)
     Designation = models.CharField(max_length=100)
-    Dept = models.CharField(max_length=100)
+    Dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
     FName = models.CharField(max_length=100, null=True, blank=True)
     MName = models.CharField(max_length=100, null=True, blank=True)
     Joining = models.DateField(null=True, blank=True)
@@ -323,19 +57,49 @@ class TeacherHonours(models.Model):
     PerAddress = models.TextField(null=True, blank=True)
     DOB = models.DateField(null=True, blank=True)
     Order = models.IntegerField(null=True, blank=True)
-    Retirement = models.DateField(null=True, blank=True)  # Stored in MEDIA folder
+    Retirement = models.DateField(null=True, blank=True, editable=False)
+
+    def save(self, *args, **kwargs):
+        if self.DOB and not self.Retirement:
+            self.Retirement = self.DOB + relativedelta(years=60)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.Name}   {self.Designation}   {self.Dept}"
+    
+class TeacherHonours(models.Model):
+    Img = models.ImageField(upload_to='images/personnel', blank=True, null=True)
+    Name = models.CharField(max_length=100)
+    Gender = models.CharField(max_length=100, blank=True, null=True)
+    Designation = models.CharField(max_length=100)
+    Dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
+    FName = models.CharField(max_length=100, null=True, blank=True)
+    MName = models.CharField(max_length=100, null=True, blank=True)
+    Joining = models.DateField(null=True, blank=True)
+    Tmis = models.CharField(max_length=50, null=True, blank=True)
+    Mobile = models.CharField(max_length=15, null=True, blank=True)
+    Email = models.EmailField(max_length=100, null=True, blank=True)
+    PreAddress = models.TextField(null=True, blank=True)
+    PerAddress = models.TextField(null=True, blank=True)
+    DOB = models.DateField(null=True, blank=True)
+    Order = models.IntegerField(null=True, blank=True)
+    Retirement = models.DateField(null=True, blank=True, editable=False)  
+
+    def save(self, *args, **kwargs):
+        if self.DOB and not self.Retirement:
+            self.Retirement = self.DOB + relativedelta(years=60)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.Name}   {self.Designation}   {self.Dept}"   
     
 
 class Staff(models.Model):
-    ID = models.IntegerField(primary_key=True)
     Img = models.ImageField(upload_to='images/personnel', blank=True, null=True)
     Name = models.CharField(max_length=100)
     Gender = models.CharField(max_length=100, blank=True, null=True)
     Designation = models.CharField(max_length=100)
-    Dept = models.CharField(max_length=100)
+    Dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
     FName = models.CharField(max_length=100, null=True, blank=True)
     MName = models.CharField(max_length=100, null=True, blank=True)
     Joining = models.DateField(null=True, blank=True)
@@ -346,19 +110,23 @@ class Staff(models.Model):
     PerAddress = models.TextField(null=True, blank=True)
     DOB = models.DateField(null=True, blank=True)
     Order = models.IntegerField(null=True, blank=True)
-    Retirement = models.DateField(null=True, blank=True)  # Stored in MEDIA folder
+    Retirement = models.DateField(null=True, blank=True, editable=False)  
+
+    def save(self, *args, **kwargs):
+        if self.DOB and not self.Retirement:
+            self.Retirement = self.DOB + relativedelta(years=60)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.Name}   {self.Designation}   {self.Dept}" 
     
 
 class NonMpoStaff(models.Model):
-    ID = models.IntegerField(primary_key=True)
     Img = models.ImageField(upload_to='images/personnel', blank=True, null=True)
     Name = models.CharField(max_length=100)
     Gender = models.CharField(max_length=100, blank=True, null=True)
     Designation = models.CharField(max_length=100)
-    Dept = models.CharField(max_length=100)
+    Dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
     FName = models.CharField(max_length=100, null=True, blank=True)
     MName = models.CharField(max_length=100, null=True, blank=True)
     Joining = models.DateField(null=True, blank=True)
@@ -368,18 +136,22 @@ class NonMpoStaff(models.Model):
     PerAddress = models.TextField(null=True, blank=True)
     DOB = models.DateField(null=True, blank=True)
     Order = models.IntegerField(null=True, blank=True)
-    Retirement = models.DateField(null=True, blank=True)  # Stored in MEDIA folder
+    Retirement = models.DateField(null=True, blank=True, editable=False)  
+
+    def save(self, *args, **kwargs):
+        if self.DOB and not self.Retirement:
+            self.Retirement = self.DOB + relativedelta(years=60)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.Name}   {self.Designation}   {self.Dept}"
     
 class ExTeacher(models.Model):
-    ID = models.IntegerField(primary_key=True)
     Img = models.ImageField(upload_to='images/personnel', blank=True, null=True)
     Name = models.CharField(max_length=100)
     Gender = models.CharField(max_length=100, blank=True, null=True)
     Designation = models.CharField(max_length=100)
-    Dept = models.CharField(max_length=100)
+    Dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
     FName = models.CharField(max_length=100, null=True, blank=True)
     MName = models.CharField(max_length=100, null=True, blank=True)
     Joining = models.DateField(null=True, blank=True)
@@ -391,18 +163,22 @@ class ExTeacher(models.Model):
     PerAddress = models.TextField(null=True, blank=True)
     DOB = models.DateField(null=True, blank=True)
     Order = models.IntegerField(null=True, blank=True)
-    Retirement = models.DateField(null=True, blank=True)  # Stored in MEDIA folder
+    Retirement = models.DateField(null=True, blank=True, editable=False)  
+
+    def save(self, *args, **kwargs):
+        if self.DOB and not self.Retirement:
+            self.Retirement = self.DOB + relativedelta(years=60)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.Name}   {self.Designation}   {self.Dept}"
     
 class ExStaff(models.Model):
-    ID = models.IntegerField(primary_key=True)
     Img = models.ImageField(upload_to='images/personnel', blank=True, null=True)
     Name = models.CharField(max_length=100)
     Gender = models.CharField(max_length=100, blank=True, null=True)
     Designation = models.CharField(max_length=100)
-    Dept = models.CharField(max_length=100)
+    Dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
     FName = models.CharField(max_length=100, null=True, blank=True)
     MName = models.CharField(max_length=100, null=True, blank=True)
     Joining = models.DateField(null=True, blank=True)
@@ -413,19 +189,23 @@ class ExStaff(models.Model):
     PerAddress = models.TextField(null=True, blank=True)
     DOB = models.DateField(null=True, blank=True)
     Order = models.IntegerField(null=True, blank=True)
-    Retirement = models.DateField(null=True, blank=True)  # Stored in MEDIA folder
+    Retirement = models.DateField(null=True, blank=True, editable=False)  
+
+    def save(self, *args, **kwargs):
+        if self.DOB and not self.Retirement:
+            self.Retirement = self.DOB + relativedelta(years=60)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.Name}   {self.Designation}   {self.Dept}"
     
         
 class OtherPeople(models.Model):
-    ID = models.IntegerField(primary_key=True)
     Img = models.ImageField(upload_to='images/personnel', blank=True, null=True)
     Name = models.CharField(max_length=100)
     Gender = models.CharField(max_length=100, blank=True, null=True)
     Designation = models.CharField(max_length=100)
-    Dept = models.CharField(max_length=100)
+    Dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
     FName = models.CharField(max_length=100, null=True, blank=True)
     MName = models.CharField(max_length=100, null=True, blank=True)
     Joining = models.DateField(null=True, blank=True)
@@ -435,7 +215,12 @@ class OtherPeople(models.Model):
     PerAddress = models.TextField(null=True, blank=True)
     DOB = models.DateField(null=True, blank=True)
     Order = models.IntegerField(null=True, blank=True)
-    Retirement = models.DateField(null=True, blank=True)
+    Retirement = models.DateField(null=True, blank=True, editable=False)
+
+    def save(self, *args, **kwargs):
+        if self.DOB and not self.Retirement:
+            self.Retirement = self.DOB + relativedelta(years=60)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.Name}   {self.Designation}   {self.Dept}"
@@ -463,6 +248,7 @@ class Notification(models.Model):
 
 class Education(models.Model): 
     Teacher = models.ForeignKey(Teacher, related_name='educations', on_delete=models.CASCADE, null=True, blank=True)
+    TeacherPart = models.ForeignKey(TeacherPart, related_name='educations', on_delete=models.CASCADE, null=True, blank=True)
     TeacherHonours = models.ForeignKey(TeacherHonours, related_name='educations', on_delete=models.CASCADE, null=True, blank=True)
     ExTeacher = models.ForeignKey(ExTeacher, related_name='educations', on_delete=models.CASCADE, null=True, blank=True)
     Staff = models.ForeignKey(Staff, related_name='educations', on_delete=models.CASCADE, null=True, blank=True)
@@ -480,6 +266,7 @@ class Education(models.Model):
 
 class Experience(models.Model): 
     Teacher = models.ForeignKey(Teacher, related_name='experiences', on_delete=models.CASCADE, null=True, blank=True)
+    TeacherPart = models.ForeignKey(TeacherPart, related_name='experiences', on_delete=models.CASCADE, null=True, blank=True)
     TeacherHonours = models.ForeignKey(TeacherHonours, related_name='experiences', on_delete=models.CASCADE, null=True, blank=True)
     ExTeacher = models.ForeignKey(ExTeacher, related_name='experiences', on_delete=models.CASCADE, null=True, blank=True)
     Staff = models.ForeignKey(Staff, related_name='experiences', on_delete=models.CASCADE, null=True, blank=True)
@@ -492,4 +279,42 @@ class Experience(models.Model):
     Comment = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return f"{self.Title} - {self.Title} - {self.Description} - {self.Comment}"
+        return f"{self.Title} - {self.Year} - {self.Description} - {self.Comment}"
+    
+
+class RelatedImage(models.Model):
+    image = models.ImageField(upload_to='images/depts')
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    caption = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return f"Image for {self.content_object}"
+
+
+class Departments(models.Model):
+    id = models.AutoField(primary_key=True)
+    Name = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
+    Img = GenericRelation(RelatedImage)
+    Title = models.CharField(max_length=63, blank=True, null=True)
+    Description = models.CharField(max_length=2048, blank=True, null=True)
+    Photo = models.ImageField(upload_to='images/depts', blank=True, null=True)
+    TitlePhoto = models.CharField(max_length=63, blank=True, null=True)
+    DescriptionPhoto = models.CharField(max_length=2048, blank=True, null=True)
+    TitleRoutine = models.CharField(max_length=63, blank=True, null=True)
+    ImgRoutine = GenericRelation(RelatedImage)
+
+
+class Post(models.Model): 
+    Departments = models.ForeignKey(Departments, related_name='departments', on_delete=models.CASCADE, null=True, blank=True)
+    Title = models.CharField(max_length=255, blank=True, null=True)
+    SubTitle = models.CharField(max_length=255, blank=True, null=True)
+    Img = GenericRelation(RelatedImage)
+    Description = models.CharField(max_length=1024, blank=True, null=True)
+    Date = models.DateField(null=True, blank=True)
+    Comment = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.Title} - {self.SubTitle} - {self.Description} - {self.Date}"

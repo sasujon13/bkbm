@@ -1,55 +1,32 @@
 from rest_framework import serializers
-from .models import Item, Customer, Order, Ordered, OrderDetail, Transaction, Teacher, Staff, ExTeacher, ExStaff, OtherPeople, TeacherHonours, NonMpoStaff, Notification
+from .models import Teacher, Staff, ExTeacher, Departments
+from .models import ExStaff, OtherPeople, TeacherHonours, NonMpoStaff, Notification, TeacherPart, Dept, RelatedImage
 
-class ItemSerializer(serializers.ModelSerializer):
+
+class DeptSerializer(serializers.ModelSerializer):
+
     class Meta:
-        model = Item
+        model = Dept
         fields = '__all__'
-
-
-class CustomerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Customer
-        fields = '__all__'
-
-
-class CustomerUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Customer
-        fields = ['fullName', 'gender', 'division', 'district', 'thana', 'union', 'village']
-
-    def update(self, instance, validated_data):
-        # Exclude 'username' and 'password' fields from the update
-        validated_data.pop('username', None)
-        validated_data.pop('password', None)
-
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
-        return instance
-    
-class TransactionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Transaction
-        fields = '__all__'
-
-class OrderDetailSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OrderDetail
-        fields = '__all__'
-
-class OrderSerializer(serializers.ModelSerializer):
-    orderDetails = OrderDetailSerializer(many=True, read_only=True)
-    transaction = TransactionSerializer(many=True, read_only=True)
-    class Meta:
-        model = Order
-        fields = '__all__'   
 
 class TeacherSerializer(serializers.ModelSerializer):
     photo_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Teacher
+        fields = '__all__'
+
+    def get_photo_url(self, obj):
+        request = self.context.get('request')
+        if obj.Img and hasattr(obj.Img, 'url'):
+            return request.build_absolute_uri(obj.Img.url)
+        return '' 
+
+class TeacherPartSerializer(serializers.ModelSerializer):
+    photo_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TeacherPart
         fields = '__all__'
 
     def get_photo_url(self, obj):
@@ -139,7 +116,29 @@ class NonMpoStaffSerializer(serializers.ModelSerializer):
         return ''
     
 
+class RelatedImageSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = RelatedImage
+        fields = ['caption', 'image']
+
+    def get_image_url(self, obj):
+        request = self.context.get('request')
+        if obj.image:
+            return request.build_absolute_uri(obj.image.url)
+        return ''
+    
+
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
+        fields = '__all__'
+    
+
+class DepartmentsSerializer(serializers.ModelSerializer):
+    img = RelatedImageSerializer(source='Img', many=True, read_only=True)
+
+    class Meta:
+        model = Departments
         fields = '__all__'

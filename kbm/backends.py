@@ -1,29 +1,19 @@
-from django.contrib.auth.backends import ModelBackend
-from kbm.models import Customer
-import logging
-
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
-
-
-from django.contrib.auth.backends import ModelBackend
+from django.contrib.auth.backends import BaseBackend
 from django.contrib.auth import get_user_model
 
-class CustomBackend(ModelBackend):
+class CustomBackend(BaseBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
+        User = get_user_model()
         try:
-            user = Customer.objects.get(username=username)
-            return user
-        except Customer.DoesNotExist:
+            user = User.objects.get(username=username)
+            if user.check_password(password):
+                return user
+        except User.DoesNotExist:
             return None
-        
-        # if user.check_password(password):
-        # if Customer.objects.get(password=password):
-        #     return user
 
     def get_user(self, user_id):
-        logger.debug(user_id)
+        User = get_user_model()
         try:
-            return Customer.objects.get(pk=user_id)
-        except Customer.DoesNotExist:
+            return User.objects.get(pk=user_id)
+        except User.DoesNotExist:
             return None

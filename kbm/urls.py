@@ -4,18 +4,9 @@ from django.urls import path, re_path
 from django.conf import settings
 from . import views
 from .views import (
-    ItemListCreateView,
     DivisionsView,
     DistrictsView,
     ThanasView,
-    CustomerCreateView,
-    CustomerRetrieveView,
-    MobileNumberExistsView,
-    PasswordExistsView,
-    CustomerUpdateView,
-    CustomerResetView,
-    PasswordUpdateView,
-    OrderRetrieveView,
     TeacherListAPIView,
     StaffListAPIView,
     ExTeacherListAPIView,
@@ -23,25 +14,21 @@ from .views import (
     OtherPeopleListAPIView,
     TeacherHonoursListAPIView,
     NonMpoStaffListAPIView,
-    NotificationExistsAPIView
+    NotificationExistsAPIView,
+    TeacherPartListAPIView,
+    DeptListAPIView,
+    DepartmentDetailView
     
 )
 urlpatterns = [
-    path('item/', ItemListCreateView.as_view(), name='item'),
     path('divisions/', DivisionsView.as_view(), name='divisions'),
     path('districts/', DistrictsView.as_view(), name='districts'),
     path('thanas/', ThanasView.as_view(), name='thanas'),
-    path('signup/', CustomerCreateView.as_view(), name='signup'),
-    path('login/', CustomerRetrieveView.as_view(), name='login'),
-    path('profile_update/', CustomerUpdateView.as_view(), name='profile_update'),
-    path('password_update/', PasswordUpdateView.as_view(), name='password_update'),
-    path('password_reset/', CustomerResetView.as_view(), name='password_reset'),
-    path('username/', MobileNumberExistsView.as_view(), name='username'),
-    path('password/', PasswordExistsView.as_view(), name='password'),
-    path('myorder/<str:username>/', OrderRetrieveView.as_view(), name='myorder'),
-    path('save_json_data/', views.save_json_data, name='save_json_data'),
+    path('dept/', DeptListAPIView.as_view(), name='dept'),
+    path('department/<str:Name>/', DepartmentDetailView.as_view(), name='department-detail'),
     path('teacher/', TeacherListAPIView.as_view(), name='teacher'),
-    path('teacherHonours/', TeacherHonoursListAPIView.as_view(), name='teacher'),
+    path('teacherPart/', TeacherPartListAPIView.as_view(), name='teacherPart'),
+    path('teacherHonours/', TeacherHonoursListAPIView.as_view(), name='teacherHonours'),
     path('staff/', StaffListAPIView.as_view(), name='staff'),
     path('nonMpoStaff/', NonMpoStaffListAPIView.as_view(), name='nonMpostaff'),
     path('exTeacher/', ExTeacherListAPIView.as_view(), name='exTeacher'),
