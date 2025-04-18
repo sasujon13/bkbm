@@ -1,26 +1,21 @@
 from django.views.static import serve
 from django.conf.urls.static import static
-from django.urls import path, re_path
+from django.urls import path, re_path, include
+from rest_framework.routers import DefaultRouter
 from django.conf import settings
 from . import views
 from .views import (
-    DivisionsView,
-    DistrictsView,
-    ThanasView,
-    TeacherListAPIView,
-    StaffListAPIView,
-    ExTeacherListAPIView,
-    ExStaffListAPIView,
-    OtherPeopleListAPIView,
-    TeacherHonoursListAPIView,
-    NonMpoStaffListAPIView,
-    NotificationExistsAPIView,
-    TeacherPartListAPIView,
-    DeptListAPIView,
-    DepartmentDetailView
+    DivisionsView, DistrictsView, ThanasView, TeacherListAPIView, StaffListAPIView, ExTeacherListAPIView, ExStaffListAPIView,
+    OtherPeopleListAPIView, TeacherHonoursListAPIView, NonMpoStaffListAPIView, NotificationExistsAPIView, TeacherPartListAPIView,
+    DeptListAPIView, DepartmentDetailView, GallaryViewSet
     
 )
+
+router = DefaultRouter()
+router.register(r'gallary', GallaryViewSet)
+
 urlpatterns = [
+    path('', include(router.urls)),
     path('divisions/', DivisionsView.as_view(), name='divisions'),
     path('districts/', DistrictsView.as_view(), name='districts'),
     path('thanas/', ThanasView.as_view(), name='thanas'),

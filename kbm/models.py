@@ -1,3 +1,4 @@
+import os
 from django.utils.translation import gettext as _
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
@@ -280,15 +281,24 @@ class Experience(models.Model):
 
     def __str__(self):
         return f"{self.Title} - {self.Year} - {self.Description} - {self.Comment}"
-    
+
+
+def upload_to_dept_folder(instance, filename):
+    dept_name = 'Admin'
+
+    if hasattr(instance.content_object, 'Dept') and instance.content_object.Dept:
+        dept_name = instance.content_object.Dept.Name
+
+    # dept_name = dept_name.replace(' ', '_')
+    return os.path.join('images', dept_name, filename)
+
 
 class RelatedImage(models.Model):
-    image = models.ImageField(upload_to='images/depts')
+    Img = models.ImageField(upload_to=upload_to_dept_folder, null=True, blank=True)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
-
-    caption = models.CharField(max_length=255, blank=True, null=True)
+    Caption = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return f"Image for {self.content_object}"
@@ -318,3 +328,11 @@ class Post(models.Model):
 
     def __str__(self):
         return f"{self.Title} - {self.SubTitle} - {self.Description} - {self.Date}"
+
+
+class Gallary(models.Model):
+    Dept = models.ForeignKey('Dept', on_delete=models.SET_NULL, null=True, blank=True)
+    Img = GenericRelation(RelatedImage)
+
+    def __str__(self):
+        return f"{self.Dept}"

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Teacher, Staff, ExTeacher, Departments
+from .models import Teacher, Staff, ExTeacher, Departments, Gallary
 from .models import ExStaff, OtherPeople, TeacherHonours, NonMpoStaff, Notification, TeacherPart, Dept, RelatedImage
 
 
@@ -121,13 +121,43 @@ class RelatedImageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RelatedImage
-        fields = ['caption', 'image']
+        fields = ['Dept', 'Img', 'Caption']
 
     def get_image_url(self, obj):
         request = self.context.get('request')
         if obj.image:
             return request.build_absolute_uri(obj.image.url)
         return ''
+    
+
+
+class GallarySerializer(serializers.ModelSerializer):
+    Img = RelatedImageSerializer(many=True, read_only=True)
+    images = serializers.ListField(
+        child=serializers.ImageField(),
+        write_only=True,
+        required=False
+    )
+    Dept = serializers.PrimaryKeyRelatedField(
+        queryset=Dept.objects.all(), write_only=True
+    )
+
+    class Meta:
+        model = Gallary
+        fields = ['Caption', 'Img', 'images', 'Dept']
+
+    def create(self, validated_data):
+        images = validated_data.pop('images', [])
+        dept = validated_data.pop('Dept', None)
+        gallary = Gallary.objects.create(**validated_data)
+
+        for img in images:
+            RelatedImage.objects.create(
+                Dept=dept,
+                image=img,
+                content_object=gallary
+            )
+        return gallary
     
 
 class NotificationSerializer(serializers.ModelSerializer):

@@ -1,14 +1,22 @@
-from django.contrib import admin
 from django import forms
 from django.db import models
+from django.contrib import admin
+from django.utils.html import format_html
 from django.contrib.contenttypes.admin import GenericTabularInline
-from .models import Teacher, Staff, ExTeacher, ExStaff, OtherPeople, TeacherHonours, NonMpoStaff, Notification, Education, Experience, Dept, Departments, RelatedImage, TeacherPart
+from .models import Teacher, Staff, ExTeacher, ExStaff, OtherPeople, TeacherHonours, NonMpoStaff, Notification, Education, Experience, Dept, Departments, RelatedImage, TeacherPart, Gallary
 # Inline for Education model
 
 
 class RelatedImageInline(GenericTabularInline):
     model = RelatedImage
     extra = 1
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        dept_id = request.GET.get('related_dept')
+        if dept_id:
+            qs = qs.filter(Dept__id=dept_id)
+        return qs
 
 class DepartmentForm(forms.ModelForm):
     class Meta:
@@ -154,3 +162,14 @@ class NonMpoStaffAdmin(admin.ModelAdmin):
     search_fields = ('Name', 'Designation', 'Dept',)
     list_filter = ('Designation', 'Dept',)
     ordering = ('Order',)
+
+@admin.register(Gallary)
+class GallaryAdmin(admin.ModelAdmin):
+    list_display = ('Dept',)
+    list_filter = ('Dept',)
+    inlines = [RelatedImageInline]
+
+    def get_depts(self, obj):
+        depts = obj.Img.values_list('Dept__Name', flat=True).distinct()
+        return format_html("<br>".join(filter(None, depts)))
+    get_depts.short_description = "Departments"
