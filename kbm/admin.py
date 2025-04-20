@@ -1,8 +1,10 @@
-from django.contrib import admin
 from django import forms
 from django.db import models
+from django.contrib import admin
+from django.utils.html import format_html
 from django.contrib.contenttypes.admin import GenericTabularInline
-from .models import Teacher, Staff, ExTeacher, ExStaff, OtherPeople, TeacherHonours, NonMpoStaff, Notification, Education, Experience, Dept, Departments, RelatedImage, TeacherPart
+from .models import Teacher, Staff, ExTeacher, ExStaff, OtherPeople, TeacherHonours, NonMpoStaff, Notification, Education, Experience, Dept
+from .models import Departments, RelatedImage, TeacherPart, Gallary, Post
 # Inline for Education model
 
 
@@ -10,10 +12,16 @@ class RelatedImageInline(GenericTabularInline):
     model = RelatedImage
     extra = 1
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if not request.user.is_superuser:
+            qs = qs.filter(Caption__in=request.user.depts.all())
+        return qs
+
 class DepartmentForm(forms.ModelForm):
     class Meta:
         model = Departments
-        fields = ['Name', 'Title', 'Description']
+        fields = ['Dept', 'Title', 'Description']
 
 class EducationForm(forms.ModelForm):
     class Meta:
@@ -53,8 +61,8 @@ def completed_button(self, obj):
 @admin.register(Departments)
 class DepartmentsAdmin(admin.ModelAdmin):
     inlines = [RelatedImageInline]
-    list_display = ('Name', 'Title',)
-    search_fields = ('Name', 'Title',)
+    list_display = ('Dept', 'Title',)
+    search_fields = ('Dept', 'Title',)
 
 @admin.register(Dept)
 class DeptAdmin(admin.ModelAdmin):
@@ -154,3 +162,31 @@ class NonMpoStaffAdmin(admin.ModelAdmin):
     search_fields = ('Name', 'Designation', 'Dept',)
     list_filter = ('Designation', 'Dept',)
     ordering = ('Order',)
+
+class GallaryAdmin(admin.ModelAdmin):
+    list_display = ('Dept',)
+    # list_filter = ('Dept',)
+    inlines = [RelatedImageInline]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs
+    
+    def has_delete_permission(self, request, obj=None):
+        return False
+    
+admin.site.register(Gallary, GallaryAdmin)
+
+class PostAdmin(admin.ModelAdmin):
+    list_display = ('Dept',)
+    # list_filter = ('Dept',)
+    inlines = [RelatedImageInline]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs
+    
+    def has_delete_permission(self, request, obj=None):
+        return False
+    
+admin.site.register(Post, PostAdmin)

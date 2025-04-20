@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Teacher, Staff, ExTeacher, Departments
+from .models import Teacher, Staff, ExTeacher, Departments, Gallary, Post
 from .models import ExStaff, OtherPeople, TeacherHonours, NonMpoStaff, Notification, TeacherPart, Dept, RelatedImage
 
 
@@ -117,17 +117,38 @@ class NonMpoStaffSerializer(serializers.ModelSerializer):
     
 
 class RelatedImageSerializer(serializers.ModelSerializer):
-    image_url = serializers.SerializerMethodField()
-
     class Meta:
         model = RelatedImage
-        fields = ['caption', 'image']
+        fields = ['Img', 'Caption']
 
-    def get_image_url(self, obj):
-        request = self.context.get('request')
-        if obj.image:
-            return request.build_absolute_uri(obj.image.url)
-        return ''
+    def get_Img(self, obj):
+        dept_name = self.context.get('filter_dept_Name')
+        images = obj.Img.all()
+
+        # Just check if the gallery's Dept matches, skip filtering RelatedImage by Dept
+        if dept_name and obj.Dept.Name != dept_name:
+            return []
+
+        return RelatedImageSerializer(images, many=True, context=self.context).data
+    
+
+class GallarySerializer(serializers.ModelSerializer):
+    Img = serializers.SerializerMethodField()
+    Dept = serializers.CharField(source='Dept.Name', read_only=True)
+
+    class Meta:
+        model = Gallary
+        fields = ['Dept', 'Img']
+
+    def get_Img(self, obj):
+        images = obj.Img.all()  # This only includes images attached to this object
+        return RelatedImageSerializer(images, many=True, context=self.context).data
+
+
+        # if dept_name:
+        #     images = images.filter(Dept__Name=dept_name)
+
+        # return RelatedImageSerializer(images, many=True, context=self.context).data
     
 
 class NotificationSerializer(serializers.ModelSerializer):
@@ -141,4 +162,11 @@ class DepartmentsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Departments
+        fields = '__all__'
+
+class PostSerializer(serializers.ModelSerializer):
+    img = RelatedImageSerializer(source='Img', many=True, read_only=True)
+
+    class Meta:
+        model = Post
         fields = '__all__'

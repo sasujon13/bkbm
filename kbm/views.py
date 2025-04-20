@@ -3,10 +3,15 @@ from rest_framework.views import APIView
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
+from rest_framework import viewsets
+from urllib.parse import unquote
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from .location import Bangladesh
 import logging
-from .models import Teacher, ExTeacher, Staff, ExStaff, OtherPeople, TeacherHonours, NonMpoStaff, Notification, TeacherPart, Dept, Departments
-from .serializers import TeacherSerializer, ExTeacherSerializer, StaffSerializer, ExStaffSerializer, OtherPeopleSerializer, TeacherHonoursSerializer, NonMpoStaffSerializer, NotificationSerializer, TeacherPartSerializer, DeptSerializer, DepartmentsSerializer
+from .models import Teacher, ExTeacher, Staff, ExStaff, OtherPeople, TeacherHonours, NonMpoStaff, Notification, TeacherPart, Dept, Departments, Gallary, Post
+from .serializers import TeacherSerializer, ExTeacherSerializer, StaffSerializer, ExStaffSerializer, OtherPeopleSerializer, TeacherHonoursSerializer, PostSerializer
+from .serializers import NonMpoStaffSerializer, NotificationSerializer, TeacherPartSerializer, DeptSerializer, DepartmentsSerializer, GallarySerializer
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -44,11 +49,13 @@ class TeacherListAPIView(APIView):
         serializer = TeacherSerializer(teachers, many=True, context={'request': request})
         return Response(serializer.data) 
 
+
 class DeptListAPIView(APIView):
     def get(self, request):
         depts = Dept.objects.all()
         serializer = DeptSerializer(depts, many=True, context={'request': request})
         return Response(serializer.data)  
+
 
 class TeacherPartListAPIView(APIView):
     def get(self, request):
@@ -56,11 +63,13 @@ class TeacherPartListAPIView(APIView):
         serializer = TeacherPartSerializer(teachersPart, many=True, context={'request': request})
         return Response(serializer.data)    
 
+
 class ExTeacherListAPIView(APIView):
     def get(self, request):
         exTeachers = ExTeacher.objects.all()
         serializer = ExTeacherSerializer(exTeachers, many=True, context={'request': request})
         return Response(serializer.data)    
+
 
 class StaffListAPIView(APIView):
     def get(self, request):
@@ -68,11 +77,13 @@ class StaffListAPIView(APIView):
         serializer = StaffSerializer(staffs, many=True, context={'request': request})
         return Response(serializer.data)    
 
+
 class ExStaffListAPIView(APIView):
     def get(self, request):
         exStaffs = ExStaff.objects.all()
         serializer = ExStaffSerializer(exStaffs, many=True, context={'request': request})
         return Response(serializer.data)    
+
 
 class OtherPeopleListAPIView(APIView):
     def get(self, request):
@@ -80,25 +91,28 @@ class OtherPeopleListAPIView(APIView):
         serializer = OtherPeopleSerializer(otherPeoples, many=True, context={'request': request})
         return Response(serializer.data)
     
+
 class TeacherHonoursListAPIView(APIView):
     def get(self, request):
         teacherHonours = TeacherHonours.objects.all()
         serializer = TeacherHonoursSerializer(teacherHonours, many=True, context={'request': request})
         return Response(serializer.data)
     
+
 class NonMpoStaffListAPIView(APIView):
     def get(self, request):
         nonMpoStaffs = NonMpoStaff.objects.all()
         serializer = NonMpoStaffSerializer(nonMpoStaffs, many=True, context={'request': request})
         return Response(serializer.data)
     
+
 class NotificationExistsAPIView(APIView):
     def get(self, request, *args, **kwargs):
         notification = Notification.objects.all()
         serializer = NotificationSerializer(notification, many=True)
-        
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+
 class DepartmentDetailView(RetrieveAPIView):
     queryset = Departments.objects.all()
     serializer_class = DepartmentsSerializer
@@ -109,3 +123,43 @@ class DepartmentDetailView(RetrieveAPIView):
             return Departments.objects.get(Name__Name=dept_name)
         except Departments.DoesNotExist:
             raise NotFound("Department not found.")
+        
+
+class GallaryListView(ListAPIView):
+    serializer_class = GallarySerializer
+
+    def get_queryset(self):
+        queryset = Gallary.objects.all().prefetch_related('Img', 'Dept')
+        dept_name = self.kwargs.get('Dept')
+        if dept_name:
+            dept_name = unquote(dept_name)
+            queryset = queryset.filter(Dept__Name=dept_name)
+
+        return queryset.distinct()
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        dept_name = self.kwargs.get('Dept')
+        if dept_name:
+            context['filter_dept_Name'] = unquote(dept_name)
+        return context
+    
+
+class PostListView(ListAPIView):
+    serializer_class = PostSerializer
+
+    def get_queryset(self):
+        queryset = Post.objects.all().prefetch_related('Img', 'Dept')
+        dept_name = self.kwargs.get('Dept')
+        if dept_name:
+            dept_name = unquote(dept_name)
+            queryset = queryset.filter(Dept__Name=dept_name)
+
+        return queryset.distinct()
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        dept_name = self.kwargs.get('Dept')
+        if dept_name:
+            context['filter_dept_Name'] = unquote(dept_name)
+        return context

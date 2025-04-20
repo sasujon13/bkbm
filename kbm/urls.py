@@ -17,7 +17,8 @@ from .views import (
     NotificationExistsAPIView,
     TeacherPartListAPIView,
     DeptListAPIView,
-    DepartmentDetailView
+    DepartmentDetailView,
+    GallaryListView
     
 )
 urlpatterns = [
@@ -25,6 +26,7 @@ urlpatterns = [
     path('districts/', DistrictsView.as_view(), name='districts'),
     path('thanas/', ThanasView.as_view(), name='thanas'),
     path('dept/', DeptListAPIView.as_view(), name='dept'),
+    path('gallary/', GallaryListView.as_view(), name='gallary'),
     path('department/<str:Name>/', DepartmentDetailView.as_view(), name='department-detail'),
     path('teacher/', TeacherListAPIView.as_view(), name='teacher'),
     path('teacherPart/', TeacherPartListAPIView.as_view(), name='teacherPart'),

@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'kbm',
+    'kbm.apps.KbmConfig',
     'rest_framework.authtoken',
     'rest_framework',
     'corsheaders'

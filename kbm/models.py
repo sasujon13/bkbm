@@ -1,15 +1,18 @@
+import os
 from django.utils.translation import gettext as _
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 from django.db import models
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.core.files.storage import default_storage
  
     
 class Dept(models.Model):
-    Name = models.CharField(max_length=255, null=True, blank=True)
-
+    Name = models.CharField(max_length=255, null=False, blank=False, unique=True, default='Administration')
+    users = models.ManyToManyField(User, related_name='depts')
     def __str__(self):
         return self.Name
     
@@ -280,23 +283,57 @@ class Experience(models.Model):
 
     def __str__(self):
         return f"{self.Title} - {self.Year} - {self.Description} - {self.Comment}"
-    
+
+
+def upload_to_dept_folder(instance, filename):
+    dept_name = 'Admin'
+
+    if hasattr(instance.content_object, 'Dept') and instance.content_object.Dept:
+        dept_name = instance.content_object.Dept.Name
+
+    # dept_name = dept_name.replace(' ', '_')
+    return os.path.join('images', dept_name, filename)
+
 
 class RelatedImage(models.Model):
-    image = models.ImageField(upload_to='images/depts')
+    Dept = models.ForeignKey('Dept', on_delete=models.CASCADE, null=True, blank=True, editable=False)
+    Img = models.ImageField(upload_to=upload_to_dept_folder, null=True, blank=True)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
+    Caption = models.CharField(max_length=255, blank=True, null=True)
 
-    caption = models.CharField(max_length=255, blank=True, null=True)
+    def save(self, *args, **kwargs):
+        try:
+            old = RelatedImage.objects.get(pk=self.pk)
+            if old.Img and not self.Img:
+                if default_storage.exists(old.Img.name):
+                    default_storage.delete(old.Img.name)
+                    print(f"Cleared and deleted file: {old.Img.name}")
+                self.delete()
+                return
+            elif old.Img and old.Img != self.Img:
+                if default_storage.exists(old.Img.name):
+                    default_storage.delete(old.Img.name)
+                    print(f"Replaced and deleted old file: {old.Img.name}")
+        except RelatedImage.DoesNotExist:
+            pass
+
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        if self.Img and default_storage.exists(self.Img.name):
+            default_storage.delete(self.Img.name)
+            print(f"Deleted file from media: {self.Img.name}")
+        super().delete(*args, **kwargs)
 
     def __str__(self):
-        return f"Image for {self.content_object}"
+        return ""
 
 
 class Departments(models.Model):
     id = models.AutoField(primary_key=True)
-    Name = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
+    Dept = models.ForeignKey('Dept', on_delete=models.CASCADE, null=False, blank=False, default=99)
     Img = GenericRelation(RelatedImage)
     Title = models.CharField(max_length=63, blank=True, null=True)
     Description = models.CharField(max_length=2048, blank=True, null=True)
@@ -307,8 +344,8 @@ class Departments(models.Model):
     ImgRoutine = GenericRelation(RelatedImage)
 
 
-class Post(models.Model): 
-    Departments = models.ForeignKey(Departments, related_name='departments', on_delete=models.CASCADE, null=True, blank=True)
+class Post(models.Model):
+    Dept = models.ForeignKey('Dept', on_delete=models.CASCADE, null=False, blank=False, default=99, editable=False)
     Title = models.CharField(max_length=255, blank=True, null=True)
     SubTitle = models.CharField(max_length=255, blank=True, null=True)
     Img = GenericRelation(RelatedImage)
@@ -318,3 +355,11 @@ class Post(models.Model):
 
     def __str__(self):
         return f"{self.Title} - {self.SubTitle} - {self.Description} - {self.Date}"
+
+
+class Gallary(models.Model):
+    Dept = models.ForeignKey('Dept', on_delete=models.CASCADE, null=False, blank=False, default=99, editable=False)
+    Img = GenericRelation(RelatedImage)
+
+    def __str__(self):
+        return f"{self.Dept}"
