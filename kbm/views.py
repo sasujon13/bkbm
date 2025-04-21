@@ -114,15 +114,23 @@ class NotificationExistsAPIView(APIView):
     
 
 class DepartmentDetailView(RetrieveAPIView):
-    queryset = Departments.objects.all()
     serializer_class = DepartmentsSerializer
-    
-    def get_object(self):
-        dept_name = self.kwargs.get('Name')  # this is from the URL
-        try:
-            return Departments.objects.get(Name__Name=dept_name)
-        except Departments.DoesNotExist:
-            raise NotFound("Department not found.")
+
+    def get_queryset(self):
+        queryset = Departments.objects.all().prefetch_related('Img', 'Dept')
+        dept_name = self.kwargs.get('Dept')
+        if dept_name:
+            dept_name = unquote(dept_name)
+            queryset = queryset.filter(Dept__Name=dept_name)
+
+        return queryset.distinct()
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        dept_name = self.kwargs.get('Dept')
+        if dept_name:
+            context['filter_dept_Name'] = unquote(dept_name)
+        return context
         
 
 class GallaryListView(ListAPIView):
